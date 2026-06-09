@@ -16,9 +16,16 @@ outputs/
 *.cache.npy
 events.out.tfevents*
 
-# Local project materials that are not part of the published lens-localization repo
-docs/
-镜片识别与定位算法/01.参考文档/
+# Local model, dataset, and vendor workspaces
+artifacts/
+data/
+models/
+third_party/
+镜片识别与定位算法/
+
+# Local project materials and reference documents that are not part of the published repo
+docs/reference/
+docs/local/
 屈光度测量算法/
 硬件模块/
 镜片模板识别与屈光度地形图测量模组技术方案20240322.pptx

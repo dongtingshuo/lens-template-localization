@@ -1,8 +1,8 @@
 backend: auto
 yolo:
-  weights: "镜片识别与定位算法/model_development/yolov5_segmentation/runs/train-seg/exp4/weights/best.pt"
-  yolo_root: "镜片识别与定位算法/model_development/yolov5_segmentation"
-  data: "镜片识别与定位算法/model_development/yolov5_segmentation/data/fan.yaml"
+  weights: "artifacts/weights/lens-yolov5-seg.pt"
+  yolo_root: "third_party/yolov5"
+  data: "artifacts/datasets/lens.yaml"
   image_size: [640, 640]
   conf_threshold: 0.25
   iou_threshold: 0.45
