@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Runtime outputs
+outputs/
+/runs/
+*.log
+*.cache
+*.cache.npy
+events.out.tfevents*
+
+# Local project materials that are not part of the published lens-localization repo
+docs/
+屈光度测量算法/
+硬件模块/
+镜片模板识别与屈光度地形图测量模组技术方案20240322.pptx
+镜片模板识别与焦度地形图测量开发项目组会议纪要240320.pdf
+镜片模板识别与焦度地形图测量技术条件.doc
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Large local export artifacts generated after checkout
+*.onnx
+*.rknn
+*.engine
+*.tflite

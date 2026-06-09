@@ -1,0 +1,16 @@
+backend: auto
+yolo:
+  weights: "镜片识别与定位算法/02.代码与实验/yolov5/runs/train-seg/exp4/weights/best.pt"
+  yolo_root: "镜片识别与定位算法/02.代码与实验/yolov5"
+  data: "镜片识别与定位算法/02.代码与实验/yolov5/data/fan.yaml"
+  image_size: [640, 640]
+  conf_threshold: 0.25
+  iou_threshold: 0.45
+  device: ""
+classical:
+  min_area_ratio: 0.005
+  max_area_ratio: 0.85
+  threshold_percentile: 85.0
+  min_threshold: 6.0
+  blur_kernel: 5
+

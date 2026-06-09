@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lens-template-locator"
+version = "0.1.0"
+description = "Lens template recognition and localization pipeline with YOLOv5 segmentation and classical fallback."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy>=1.21",
+  "Pillow>=9.0",
+  "PyYAML>=5.3",
+]
+authors = [
+  { name = "Dongting Shuo" }
+]
+license = { text = "GPL-3.0-or-later" }
+keywords = ["lens", "computer-vision", "yolov5", "segmentation", "localization"]
+
+[project.optional-dependencies]
+yolo = [
+  "opencv-python>=4.5",
+  "torch>=1.13",
+  "torchvision>=0.14",
+]
+dev = [
+  "pytest>=7.0",
+]
+
+[project.scripts]
+lens-locate = "lens_locator.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["lens_locator*"]

@@ -1,0 +1,9 @@
+numpy>=1.21
+Pillow>=9.0
+PyYAML>=5.3
+
+# Optional YOLOv5 segmentation backend
+opencv-python>=4.5
+torch>=1.13
+torchvision>=0.14
+
