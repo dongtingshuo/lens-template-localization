@@ -9,6 +9,7 @@ from typing import Literal, Optional
 
 from .classical import ClassicalConfig, ClassicalLensDetector
 from .result import LensLocalizationResult
+from .topography import TopographyConfig
 from .yolo import YoloConfig, YoloV5SegmentLensDetector
 
 
@@ -20,6 +21,7 @@ class LensLocatorConfig:
     backend: BackendName = "auto"
     yolo: YoloConfig = field(default_factory=YoloConfig)
     classical: ClassicalConfig = field(default_factory=ClassicalConfig)
+    topography: TopographyConfig = field(default_factory=TopographyConfig)
 
 
 class LensLocator:

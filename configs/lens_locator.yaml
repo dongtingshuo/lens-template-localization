@@ -13,3 +13,12 @@ classical:
   threshold_percentile: 85.0
   min_threshold: 6.0
   blur_kernel: 5
+topography:
+  pixel_size_mm: 0.05
+  sensor_focal_length_mm: 25.0
+  lens_diameter_mm: 70.0
+  spot_pitch_px: 32.0
+  spot_threshold_percentile: 92.0
+  min_spot_area_px: 4
+  max_spot_area_px: 800
+  max_pair_distance_px: 48.0

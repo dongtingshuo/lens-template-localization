@@ -7,6 +7,7 @@ from typing import Any, Dict
 
 from .classical import ClassicalConfig
 from .pipeline import LensLocatorConfig
+from .topography import TopographyConfig
 from .yolo import YoloConfig
 
 
@@ -19,10 +20,12 @@ def load_config(path: str | Path) -> LensLocatorConfig:
     payload = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
     yolo_payload = payload.get("yolo", {})
     classical_payload = payload.get("classical", {})
+    topography_payload = payload.get("topography", {})
     return LensLocatorConfig(
         backend=payload.get("backend", "auto"),
         yolo=_build_yolo_config(yolo_payload),
         classical=ClassicalConfig(**classical_payload),
+        topography=TopographyConfig(**topography_payload),
     )
 
 
@@ -34,4 +37,3 @@ def _build_yolo_config(payload: Dict[str, Any]) -> YoloConfig:
     if "image_size" in values:
         values["image_size"] = tuple(values["image_size"])
     return YoloConfig(**values)
-

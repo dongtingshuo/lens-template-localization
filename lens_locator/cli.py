@@ -9,7 +9,8 @@ from typing import Iterable, List
 
 from .config import load_config
 from .pipeline import LensLocator, LensLocatorConfig
-from .visualize import save_overlay
+from .topography import RefractiveTopographyEstimator
+from .visualize import save_overlay, save_topography_overlay
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -19,6 +20,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", default=None, help="YAML config path.")
     parser.add_argument("--json", dest="json_path", default=None, help="Path for JSON result.")
     parser.add_argument("--overlay-dir", default=None, help="Directory for annotated overlay images.")
+    parser.add_argument("--measure-topography", action="store_true", help="Estimate refractive power topography.")
+    parser.add_argument("--reference", default=None, help="Reference Hartmann/grid image for topography.")
+    parser.add_argument("--topography-overlay-dir", default=None, help="Directory for power-map overlay images.")
     parser.add_argument("--pretty", action="store_true", help="Pretty-print JSON output.")
     return parser
 
@@ -35,10 +39,21 @@ def main(argv: List[str] | None = None) -> int:
     results = []
     for image_path in images:
         result = locator.locate(image_path)
-        results.append(result.to_dict())
+        payload = result.to_dict()
         if args.overlay_dir:
             out = Path(args.overlay_dir) / f"{image_path.stem}_overlay.jpg"
             save_overlay(image_path, result, out)
+        if args.measure_topography:
+            topography = RefractiveTopographyEstimator(config.topography).measure(
+                image_path,
+                reference_path=args.reference,
+                lens_detection=result.best,
+            )
+            payload["topography"] = topography.to_dict()
+            if args.topography_overlay_dir:
+                out = Path(args.topography_overlay_dir) / f"{image_path.stem}_topography.jpg"
+                save_topography_overlay(image_path, topography, out)
+        results.append(payload)
 
     payload = results[0] if len(results) == 1 else {"results": results}
     text = json.dumps(payload, ensure_ascii=False, indent=2 if args.pretty else None)

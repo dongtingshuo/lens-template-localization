@@ -1,60 +1,62 @@
 # Architecture
 
-本文档说明镜片模板识别与定位工程的运行时结构。仓库目标是提供可集成、可测试、可配置的算法包，而不是保存训练草稿、参考文献或原始实验资料。
+本文档说明镜片模板识别与焦度地形图测量工程的运行时结构。项目以稳定 API、可配置算法和可验证输出为核心，覆盖从镜片定位到屈光度地形图的完整软件流程。
 
-This document describes the runtime architecture of the lens-template recognition and localization project. The repository is designed as an integration-ready algorithm package, not as a storage location for training drafts, references, or raw experiment material.
+This document describes the runtime architecture of the lens-template recognition and refractive power topography project. The design centers on stable APIs, configurable algorithms, and verifiable outputs from localization through refractive power mapping.
 
 ## Pipeline
 
 ```text
 input image
-  -> backend selection
-  -> lens region detection
-  -> geometry estimation
-  -> result normalization
-  -> JSON and optional overlay
+  -> lens localization
+  -> optional overlay
+  -> Hartmann spot detection
+  -> reference/measured spot pairing
+  -> displacement-to-angle conversion
+  -> refractive matrix fitting
+  -> power topography JSON and overlay
 ```
-
-1. `LensLocator` receives an image path and a `LensLocatorConfig`.
-2. `backend=auto` tries the YOLOv5 segmentation adapter first.
-3. If YOLO artifacts or dependencies are unavailable, the classical detector runs as a fallback.
-4. Backend-specific detections are normalized into `LensDetection`.
-5. The CLI writes JSON and, when requested, an annotated overlay image.
 
 ## Modules
 
 | Module | Responsibility |
 | --- | --- |
-| `lens_locator.pipeline` | Selects backend, measures runtime, and returns `LensLocalizationResult`. |
-| `lens_locator.yolo` | Adapts a local YOLOv5 segmentation workspace to the project result contract. |
-| `lens_locator.classical` | Provides a dependency-light fallback based on contrast thresholding and connected components. |
+| `lens_locator.pipeline` | Selects localization backend and returns `LensLocalizationResult`. |
+| `lens_locator.classical` | Provides the default lens detector based on image contrast and connected components. |
+| `lens_locator.yolo` | Adapts a YOLOv5 segmentation runtime to the project output contract. |
+| `lens_locator.topography` | Detects Hartmann spots, pairs reference/measured points, and fits refractive power maps. |
 | `lens_locator.geometry` | Converts masks and polygons into center, bounding box, radius, angle, and contour. |
-| `lens_locator.result` | Defines immutable dataclasses used by the API and CLI serialization. |
-| `lens_locator.visualize` | Draws overlay images for inspection and downstream reports. |
-| `lens_locator.config` | Loads YAML and converts file paths into runtime configuration objects. |
+| `lens_locator.result` | Defines immutable dataclasses for localization results. |
+| `lens_locator.visualize` | Draws lens overlays and power-map overlays. |
+| `lens_locator.demo` | Generates deterministic synthetic inputs for demos and tests. |
+| `lens_locator.config` | Loads YAML and builds runtime configuration objects. |
+
+## Data Flow
+
+1. `LensLocator.locate()` receives an image path and returns one or more `LensDetection` objects.
+2. `RefractiveTopographyEstimator.measure()` detects bright spot centroids in the measured image.
+3. If a reference image is provided, its spot centroids are used as the reference field.
+4. If no reference image is provided, a regular reference grid is generated from the lens geometry and configured pitch.
+5. Matched spot displacement is converted to angular deflection using `pixel_size_mm / sensor_focal_length_mm`.
+6. A 2x2 refractive power matrix is fitted by least squares.
+7. Eigen decomposition produces principal powers, sphere equivalent, cylinder, and axis.
 
 ## Backend Contract
 
-Every detector backend exposes:
+Every localization backend exposes:
 
 ```python
 predict(image_path) -> list[LensDetection]
 ```
 
-This keeps the system open to additional backends such as ONNX Runtime, OpenVINO, RKNN, or an industrial camera SDK without changing the CLI or API result shape.
+The topography estimator consumes either a `LensDetection` ROI or the full image field. This separation keeps recognition and optical measurement independently testable while allowing the CLI to run them as one workflow.
+
+## Configuration Layers
+
+- `backend`, `yolo`, and `classical` configure lens localization.
+- `topography` configures Hartmann spot extraction and refractive calibration.
+- CLI flags select output paths, overlay generation, reference images, and backend behavior.
 
 ## Error Handling
 
-`backend=auto` records the YOLO failure message in `LensLocalizationResult.error` and continues with the classical backend. `backend=yolo` raises the original exception, which is better for strict production deployments where missing model artifacts should fail fast.
-
-## Deployment Boundary
-
-The repository contains runtime source, tests, configuration, scripts, and formal Markdown documentation. The following materials are intentionally local-only:
-
-- trained weights and exported models;
-- raw or annotated datasets;
-- copied third-party YOLOv5 workspaces;
-- reference papers, meeting minutes, and hardware documents;
-- generated overlays, JSON outputs, logs, and cache files.
-
-This boundary keeps the public project professional while still allowing the completed model to be mounted into the expected local artifact paths during deployment.
+`backend=auto` records YOLO initialization or inference failures and continues with the classical backend. Strict deployments can set `backend=yolo` to fail fast when the neural backend is unavailable. Topography estimation raises a clear error when too few matched spots are available for a stable fit.
