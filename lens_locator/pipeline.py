@@ -18,7 +18,7 @@ BackendName = Literal["auto", "yolo", "classical"]
 
 @dataclass
 class LensLocatorConfig:
-    backend: BackendName = "auto"
+    backend: BackendName = "yolo"
     yolo: YoloConfig = field(default_factory=YoloConfig)
     classical: ClassicalConfig = field(default_factory=ClassicalConfig)
     topography: TopographyConfig = field(default_factory=TopographyConfig)

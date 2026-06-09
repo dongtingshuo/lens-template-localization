@@ -1,4 +1,4 @@
-backend: auto
+backend: yolo
 yolo:
   weights: "artifacts/weights/lens-yolov5-seg.pt"
   yolo_root: "third_party/yolov5"
@@ -6,7 +6,7 @@ yolo:
   image_size: [640, 640]
   conf_threshold: 0.25
   iou_threshold: 0.45
-  device: ""
+  device: "0"
 classical:
   min_area_ratio: 0.005
   max_area_ratio: 0.85

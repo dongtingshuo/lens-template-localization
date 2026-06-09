@@ -22,7 +22,7 @@ class YoloConfig:
     image_size: Tuple[int, int] = (640, 640)
     conf_threshold: float = 0.25
     iou_threshold: float = 0.45
-    device: str = ""
+    device: str = "0"
 
 
 class YoloV5SegmentLensDetector:

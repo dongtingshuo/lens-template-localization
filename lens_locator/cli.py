@@ -16,7 +16,7 @@ from .visualize import save_overlay, save_topography_overlay
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Lens recognition and localization pipeline.")
     parser.add_argument("source", help="Image file or directory.")
-    parser.add_argument("--backend", choices=["auto", "yolo", "classical"], default="auto")
+    parser.add_argument("--backend", choices=["auto", "yolo", "classical"], default=None)
     parser.add_argument("--config", default=None, help="YAML config path.")
     parser.add_argument("--json", dest="json_path", default=None, help="Path for JSON result.")
     parser.add_argument("--overlay-dir", default=None, help="Directory for annotated overlay images.")
@@ -30,7 +30,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: List[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     config = load_config(args.config) if args.config else LensLocatorConfig()
-    config.backend = args.backend
+    if args.backend:
+        config.backend = args.backend
     locator = LensLocator(config)
     images = list(_iter_images(Path(args.source)))
     if not images:
