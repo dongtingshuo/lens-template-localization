@@ -1,92 +1,104 @@
 # 镜片模板识别与定位 / Lens Template Recognition and Localization
 
-面向镜片模板检测设备的计算机视觉项目，聚焦镜片区域识别、中心定位、分割推理、结果可视化和工程化调用接口。
+镜片模板识别与定位算法工程，提供镜片区域分割、中心点定位、结果结构化输出和可视化叠加能力。当前仓库只发布镜片识别与定位相关代码、配置、模型开发资产和测试，不包含其他未完成模块或参考文档。
 
-A computer-vision project for lens template inspection devices, focused on lens region recognition, center localization, segmentation inference, result visualization, and production-style interfaces.
+A production-oriented lens template recognition and localization project. It provides lens-area segmentation, center localization, structured outputs, and overlay visualization. This repository publishes only the lens recognition and localization algorithm, configuration, model-development assets, and tests.
 
-## 项目亮点 / Highlights
+## 工程能力 / Capabilities
 
-- 深度学习识别：基于本仓库已有 YOLOv5 segmentation 训练资产，识别镜片区域并输出分割结果。
-- 轻量传统视觉兜底：无 GPU 或无 PyTorch 时，可用 `Pillow + numpy` 完成镜片轮廓定位。
-- 工程化接口：提供 `lens_locator` Python 包、`lens-locate` CLI、JSON 输出和叠加图输出。
-- 双语文档：GitHub README、算法说明和训练说明均采用中英双语表达。
+- 镜片分割识别：集成已训练的 YOLOv5 segmentation 权重，输出镜片区域 mask、外接框、中心点和置信度。
+- 中心定位兜底：提供 `Pillow + numpy` 传统视觉后端，便于在轻量环境中完成基础定位。
+- 统一调用接口：提供 `lens_locator` Python 包、`lens-locate` CLI、YAML 配置、JSON 结果和 overlay 输出。
+- 可验证交付：包含最小样例数据、单元测试和模型导出脚本，便于复现与集成。
 
-- Deep-learning recognition: uses the existing YOLOv5 segmentation assets in this repository to detect and segment the lens area.
-- Lightweight fallback: when GPU or PyTorch is unavailable, `Pillow + numpy` can still localize the lens contour.
-- Production-style interface: ships a `lens_locator` Python package, `lens-locate` CLI, JSON output, and overlay visualization.
-- Bilingual documentation: README, algorithm notes, and training notes are written in Chinese and English.
+- Lens segmentation: integrates trained YOLOv5 segmentation weights and returns mask, bounding box, center point, and confidence.
+- Localization fallback: includes a `Pillow + numpy` classical-vision backend for lightweight environments.
+- Unified interface: ships the `lens_locator` Python package, `lens-locate` CLI, YAML config, JSON result, and overlay output.
+- Verifiable delivery: includes sample data, unit tests, and an export script for reproducible integration.
 
 ## 目录结构 / Repository Layout
 
 ```text
 .
-├── lens_locator/                         # 工程化识别与定位代码 / production pipeline
-├── configs/lens_locator.yaml             # 默认推理配置 / default inference config
+├── configs/
+│   └── lens_locator.yaml                 # 默认推理配置 / default inference config
+├── lens_locator/                         # 工程化识别与定位包 / production Python package
+├── scripts/
+│   └── export_yolov5_onnx.sh             # ONNX 导出脚本 / ONNX export script
 ├── tests/                                # 单元测试 / unit tests
-└── 镜片识别与定位算法/02.代码与实验/yolov5/ # YOLOv5 训练与推理工作区 / YOLOv5 workspace
+└── 镜片识别与定位算法/
+    ├── README.md                         # 算法资产说明 / algorithm asset notes
+    └── model_development/
+        └── yolov5_segmentation/          # YOLOv5 分割模型工作区 / YOLOv5 segmentation workspace
 ```
 
-## 环境选择 / Environment
+`model_development/yolov5_segmentation` 保存训练入口、样例数据、权重和导出工具；正式推理入口在根目录的 `lens_locator/` 包中。
 
-本机已探测到 `conda` 环境，其中 `pytorch` 最适合当前项目：
+`model_development/yolov5_segmentation` stores training entry points, sample data, weights, and export utilities. The production inference entry point is the root-level `lens_locator/` package.
 
-The local Conda environment named `pytorch` is the best fit for this project:
+## 环境 / Environment
+
+推荐使用本机已有的 `pytorch` Conda 环境：
+
+Use the existing `pytorch` Conda environment:
 
 ```bash
 conda activate pytorch
 python -c "import torch, cv2, numpy, PIL, yaml, pytest; print('ok')"
 ```
 
-该环境已经包含 `torch / torchvision / opencv / numpy / Pillow / PyYAML / pytest`，可直接运行 YOLOv5 分割推理、传统视觉兜底和测试。
-
-It already includes `torch / torchvision / opencv / numpy / Pillow / PyYAML / pytest`, so it can run YOLOv5 segmentation inference, the classical fallback, and tests.
-
 ## 快速推理 / Quick Inference
 
-使用自动后端：优先 YOLOv5，失败时自动切到传统视觉。
+自动后端会优先使用 YOLOv5 segmentation；如果深度学习后端不可用，会切换到传统视觉后端。
 
-Use the automatic backend: YOLOv5 first, then classical fallback if needed.
+The automatic backend tries YOLOv5 segmentation first and falls back to the classical-vision backend when needed.
 
 ```bash
 conda run -n pytorch python -m lens_locator.cli \
-  "镜片识别与定位算法/02.代码与实验/yolov5/data/fan/images/train/1 (1).png" \
+  "镜片识别与定位算法/model_development/yolov5_segmentation/data/fan/images/train/1 (1).png" \
   --config configs/lens_locator.yaml \
   --overlay-dir outputs/overlays \
   --json outputs/result.json \
   --pretty
 ```
 
-只运行轻量传统视觉：
+仅运行传统视觉后端：
 
-Run only the lightweight classical backend:
+Run only the classical-vision backend:
 
 ```bash
 conda run -n pytorch python -m lens_locator.cli \
-  "镜片识别与定位算法/02.代码与实验/yolov5/data/fan/images/train/1 (1).png" \
+  "镜片识别与定位算法/model_development/yolov5_segmentation/data/fan/images/train/1 (1).png" \
   --backend classical \
   --overlay-dir outputs/overlays \
   --pretty
 ```
 
-输出字段包括 `bbox_xyxy`、`center_xy`、`radius_px`、`diameter_px`、`confidence`、`angle_deg` 和 `source`。
+核心输出字段包括 `bbox_xyxy`、`center_xy`、`radius_px`、`diameter_px`、`confidence`、`angle_deg` 和 `source`。
 
-The output includes `bbox_xyxy`, `center_xy`, `radius_px`, `diameter_px`, `confidence`, `angle_deg`, and `source`.
+Key output fields include `bbox_xyxy`, `center_xy`, `radius_px`, `diameter_px`, `confidence`, `angle_deg`, and `source`.
 
-## 算法路线 / Algorithm
+## 算法流程 / Algorithm Flow
 
-1. YOLOv5 分割后端：加载 `best.pt`，对镜片区域做实例分割，输出中心、半径、外接框和置信度。
-2. 传统视觉后端：估计背景亮度，提取与背景差异最大的连通区域，并根据椭圆外接框计算中心与半径。
-3. 统一结果模型：所有后端均返回 `LensDetection`，便于后续标定、机械定位和设备控制模块复用。
+1. 图像读取与归一化：加载输入图像并统一为后端可处理的像素格式。
+2. 镜片区域检测：YOLOv5 segmentation 生成实例 mask；传统视觉后端提取显著连通区域。
+3. 几何量计算：根据 mask 计算外接框、中心点、半径、直径和方向角。
+4. 结果封装：统一返回 `LensDetection`，方便上层系统读取 JSON 或调用 Python API。
 
-1. YOLOv5 segmentation backend: loads `best.pt`, segments the lens area, and returns center, radius, bounding box, and confidence.
-2. Classical vision backend: estimates background brightness, extracts the strongest connected component, and computes center/radius from an ellipse-like bounding box.
-3. Unified result model: all backends return `LensDetection`, making calibration, mechanical positioning, and device-control modules easier to integrate.
+1. Image loading and normalization: converts input images into backend-ready pixel data.
+2. Lens-region detection: YOLOv5 segmentation generates instance masks, while the classical backend extracts the dominant connected component.
+3. Geometry estimation: computes bounding box, center point, radius, diameter, and orientation angle from the mask.
+4. Result packaging: returns `LensDetection` for JSON output or Python API integration.
 
-## 训练与导出 / Training and Export
+## 模型开发与导出 / Model Development and Export
 
-YOLOv5 分割训练入口保留在 `镜片识别与定位算法/02.代码与实验/yolov5/segment/train.py`，当前仓库已包含可用于演示推理的 `best.pt` 权重和小规模样例数据。
+YOLOv5 segmentation 工作区：
 
-The YOLOv5 segmentation training entry point is `镜片识别与定位算法/02.代码与实验/yolov5/segment/train.py`. This repository includes `best.pt` and a small sample dataset for reproducible inference demos.
+YOLOv5 segmentation workspace:
+
+```text
+镜片识别与定位算法/model_development/yolov5_segmentation/
+```
 
 ONNX 导出：
 
@@ -96,34 +108,28 @@ Export ONNX:
 conda run -n pytorch ./scripts/export_yolov5_onnx.sh
 ```
 
-RKNN 部署建议基于导出的 ONNX，在 RKNN-Toolkit2 环境中完成量化和转换。
-
-For RKNN deployment, convert and quantize the exported ONNX model in an RKNN-Toolkit2 environment.
-
 ## 测试 / Tests
 
 ```bash
 conda run -n pytorch pytest -q
 ```
 
-## GitHub About / GitHub About
+## 仓库元信息 / Repository Metadata
 
-建议仓库描述：
-
-Suggested repository description:
+描述 / Description:
 
 ```text
 镜片模板识别与中心定位算法工程 / Lens template recognition and center localization toolkit.
 ```
 
-建议 Topics：
-
-Suggested topics:
+Topics:
 
 ```text
 computer-vision, lens-detection, lens-localization, yolo, yolov5, segmentation, optical-metrology, python
 ```
 
-## License
+## 许可证 / License
 
-This repository includes YOLOv5-derived code and is released under GPL-3.0-or-later. See [LICENSE](LICENSE).
+本仓库包含 YOLOv5 派生代码，因此采用 `GPL-3.0-or-later`。详见 [LICENSE](LICENSE)。
+
+This repository includes YOLOv5-derived code and is released under `GPL-3.0-or-later`. See [LICENSE](LICENSE).

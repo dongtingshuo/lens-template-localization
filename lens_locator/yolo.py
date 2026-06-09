@@ -16,9 +16,9 @@ from .result import LensDetection
 
 @dataclass
 class YoloConfig:
-    weights: Path = Path("镜片识别与定位算法/02.代码与实验/yolov5/runs/train-seg/exp4/weights/best.pt")
-    yolo_root: Path = Path("镜片识别与定位算法/02.代码与实验/yolov5")
-    data: Path = Path("镜片识别与定位算法/02.代码与实验/yolov5/data/fan.yaml")
+    weights: Path = Path("镜片识别与定位算法/model_development/yolov5_segmentation/runs/train-seg/exp4/weights/best.pt")
+    yolo_root: Path = Path("镜片识别与定位算法/model_development/yolov5_segmentation")
+    data: Path = Path("镜片识别与定位算法/model_development/yolov5_segmentation/data/fan.yaml")
     image_size: Tuple[int, int] = (640, 640)
     conf_threshold: float = 0.25
     iou_threshold: float = 0.45
