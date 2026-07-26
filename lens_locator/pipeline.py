@@ -12,7 +12,6 @@ from .result import LensLocalizationResult
 from .topography import TopographyConfig
 from .yolo import YoloConfig, YoloV5SegmentLensDetector
 
-
 BackendName = Literal["auto", "yolo", "classical"]
 
 

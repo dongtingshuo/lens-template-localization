@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-
 Point = Tuple[float, float]
 BBox = Tuple[float, float, float, float]
 
