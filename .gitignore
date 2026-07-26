@@ -9,6 +9,7 @@ __pycache__/
 venv/
 
 # Runtime outputs
+build/
 outputs/
 /runs/
 *.log
