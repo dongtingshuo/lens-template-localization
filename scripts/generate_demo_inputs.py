@@ -11,7 +11,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from lens_locator.demo import create_demo_lens_image, create_demo_topography_pair
+from lens_locator.demo import (  # noqa: E402
+    create_demo_lens_image,
+    create_demo_topography_pair,
+)
 
 
 def main() -> int:

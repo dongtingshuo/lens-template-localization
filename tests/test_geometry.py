@@ -1,4 +1,9 @@
-from lens_locator.geometry import detection_from_polygon, polygon_area, polygon_centroid, yolo_segment_to_points
+from lens_locator.geometry import (
+    detection_from_polygon,
+    polygon_area,
+    polygon_centroid,
+    yolo_segment_to_points,
+)
 
 
 def test_polygon_area_and_centroid_for_square():

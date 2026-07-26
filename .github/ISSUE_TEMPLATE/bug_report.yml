@@ -1,0 +1,18 @@
+name: Bug report / 缺陷报告
+description: Report a reproducible localization or topography problem / 报告可复现的定位或地形图问题
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction / 复现步骤
+      description: Include command, config, backend, input description, and logs; remove private data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / 预期行为
+    validations:
+      required: true

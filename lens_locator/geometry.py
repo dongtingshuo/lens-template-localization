@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from typing import Iterable, List, Sequence, Tuple
+from typing import List, Sequence, Tuple
 
 import numpy as np
 
@@ -136,4 +136,3 @@ def _ellipse_contour(bbox: BBox, samples: int = 72) -> List[Point]:
         (float(cx + math.cos(theta) * rx), float(cy + math.sin(theta) * ry))
         for theta in np.linspace(0.0, 2.0 * math.pi, samples, endpoint=False)
     ]
-

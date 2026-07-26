@@ -214,6 +214,7 @@ topography:
 
 ```bash
 pytest -q
+ruff check .
 ```
 
 期望结果 / Expected result:
@@ -241,3 +242,8 @@ computer-vision, lens-detection, lens-localization, refractive-topography, optic
 This project is released under `GPL-3.0-or-later`.
 
 本项目采用 `GPL-3.0-or-later` 许可证发布。
+
+## Contributing and security / 贡献与安全
+
+- [Contributing guide / 贡献指南](CONTRIBUTING.md)
+- [Security policy / 安全策略](SECURITY.md)

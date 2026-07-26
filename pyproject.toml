@@ -27,6 +27,7 @@ yolo = [
 ]
 dev = [
   "pytest>=7.0",
+  "ruff>=0.8",
 ]
 
 [project.scripts]
@@ -35,3 +36,9 @@ lens-topography = "lens_locator.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["lens_locator*"]
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
